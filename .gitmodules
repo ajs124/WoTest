@@ -1,0 +1,9 @@
+[submodule "implementations/node-wot"]
+	path = implementations/node-wot
+	url = https://github.com/eclipse/thingweb.node-wot/
+[submodule "implementations/wot-py"]
+	path = implementations/wot-py
+	url = https://github.com/agmangas/wot-py
+[submodule "implementations/sane-city"]
+	path = implementations/sane-city
+	url = https://github.com/sane-city/wot-servient
