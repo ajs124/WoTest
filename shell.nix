@@ -15,13 +15,7 @@ stdenv.mkDerivation {
     # wot-py
     (python3.withPackages (p: with p; [
       setuptools
-      tornado
-      jsonschema
-      six
-      rx
-      python-slugify
-      hbmqtt
-      zeroconf
+      pip
 
       # for tests
       pytest
@@ -36,5 +30,7 @@ stdenv.mkDerivation {
   ];
   shellHook = ''
     export GOPATH=$PWD/gopath
+    export NODE_PATH=$PWD/implementations/node-wot-install/node_modules:$NODE_PATH
+    export PYTHONPATH=$PWD/implementations/wot-py/install:$PYTHONPATH
   '';
 }
