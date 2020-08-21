@@ -1,1 +1,3 @@
 gopath
+*.sw?
+node_modules
