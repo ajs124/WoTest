@@ -10,7 +10,7 @@ stdenv.mkDerivation {
     nodejs
     nodePackages.npm
     # sane-city
-    jdk12
+    jdk12_headless
     maven
     # wot-py
     (python3.withPackages (p: with p; [
