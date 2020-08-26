@@ -2,6 +2,8 @@
 set -eu
 if [ -f /etc/NIXOS ]; then
     nix-shell --run "go run ."
+elif [ $(which docker) ]; then
+    docker build .
 else
     requiredBinaries=("go" "node" "npm" "python" "pip")
     for b in $requiredBinaries; do

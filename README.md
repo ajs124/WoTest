@@ -38,6 +38,8 @@ With the following security schemes:
 Use `run.sh`.
 It tries to do some best effor checks to see if you have all the relevant languages and runtimes installed and warns you if you do not.
 How to install dependencies is up to you.
+## With docker installed
+If `run.sh` finds a docker binary, it will use the included Dockerfiles, which should pull all dependencies for you.
 ## NixOS
 If `run.sh` detects that it's running on NixOS it will automatically download all the dependencies for you.
 ## Other operating systems (BSD, NT, darwin, ...)
