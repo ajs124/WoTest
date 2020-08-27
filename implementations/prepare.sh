@@ -7,20 +7,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 mosquitto -c mosquitto.conf &
 trap "kill %1" EXIT
 
-cd node-wot
-npm install
-npm run bootstrap
-npm run build
-cd ../node-wot-install
-npm install
+./prepare_node-wot.sh
 
-cd ../sane-city
-ls -A
-mvn install -DskipTests  # FIXME
+./prepare_sane-city.sh
 
-cd ../wot-py
-python3 setup.py build
-#WOTPY_TESTS_MQTT_BROKER_URL=mqtt://127.0.0.1 python3 setup.py test
-rm -rf install
-mkdir install
-pip install -t install .
+./prepare_wot-py.sh
