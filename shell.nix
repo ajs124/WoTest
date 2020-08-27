@@ -31,10 +31,10 @@ stdenv.mkDerivation {
 
   shellHook = ''
     export GOPATH=$PWD/gopath
-    export NODE_PATH=$PWD/implementations/node-wot-install/node_modules:$NODE_PATH
+    export NODE_PATH="$PWD/implementations/node-wot-install/node_modules:$NODE_PATH"
     export SOURCE_DATE_EPOCH=315532800
     alias pip="PIP_PREFIX='$PWD/.pip_packages' \pip"
-    export PYTHONPATH="$PWD/.pip_packages/lib/${pkgs.python3.libPrefix}/site-packages:$PYTHONPATH"
+    export PYTHONPATH="$PWD/implementations/wot-py/install:$PWD/.pip_packages/lib/${pkgs.python3.libPrefix}/site-packages:$PYTHONPATH"
     cd src
   '';
 }
