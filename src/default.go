@@ -2,29 +2,23 @@ package main
 
 import (
 	"github.com/philandstuff/dhall-golang/v4"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
-type WoTConsumer interface {
-}
-
-type WoTProducer interface {
-}
-
-type WoTImplementationInterface interface {
-	initialize() error
-	consumer() (WoTConsumer, error)
-	producer() (WoTProducer, error)
-}
-
 type WoTImplementation struct {
-	name string
+	name    string
+	path    string // this is the "install" or "library" path, not the path of the
+	runtime Runtime
 }
 
 type Config struct {
-	TestsDir string
+	TestsDir           string
+	ImplementationsDir string
+	LogLevel           int8
+	Implementations    []WoTImplementation
 }
 
 func loadConfig(configPath string) (Config, error) {
@@ -34,34 +28,49 @@ func loadConfig(configPath string) (Config, error) {
 		return config, err
 	}
 	err = dhall.Unmarshal(bytes, &config)
-	if err != nil {
-		return config, err
+	if err == nil {
+		log.Debug().Msgf("Loaded Config: %+v", config)
 	}
 	return config, err
+}
+
+func checkDir(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		log.Error().Str("path", path).Err(err).Msg("Error opening")
+	}
+	fs, err := f.Stat()
+	if err != nil {
+		log.Error().Str("path", path).Err(err).Msg("Error stat(ing?)")
+	}
+	if fs.IsDir() {
+		return nil
+	}
+	return err
 }
 
 func main() {
 	configPath := "config.d"
 	config, err := loadConfig(configPath)
 	if err != nil {
-		log.Printf("Failed to load/parse config file (%s): %s", configPath, err)
+		zerolog.SetGlobalLevel(zerolog.Level(config.LogLevel))
+		log.Error().Msgf("Failed to load/parse config file (%s): %s", configPath, err)
 		os.Exit(1)
 	}
 
-	var WoTImplementations []WoTImplementation
-
-	testsDir := config.TestsDir
-	folders, err := ioutil.ReadDir(testsDir)
-	if err != nil {
-		log.Printf("Failed to read tests folder (%s): %s", testsDir, err)
-		os.Exit(2)
-	}
-	for _, d := range folders {
-		if !d.IsDir() {
-			log.Printf("Non-directory file in tests folder (%s): %s", testsDir, d.Name())
-		} else {
-			log.Printf("Adding implementation from tests folder (%s): %s", testsDir, d.Name())
-			WoTImplementations = append(WoTImplementations, WoTImplementation{name: d.Name()})
+	for _, i := range config.Implementations {
+		log.Debug().Str("Scanning if ImplementationsDir and TestDir exist for implementation", i.name)
+		path := config.ImplementationsDir + "/" + i.name
+		err := checkDir(path)
+		if err != nil {
+			log.Error().Err(err).Str("path", path).Msg("Error checking implementation folder")
+		}
+		path = config.TestsDir + "/" + i.name
+		err = checkDir(path)
+		if err != nil {
+			log.Error().Err(err).Str("path", path).Msg("Error checking test folder")
 		}
 	}
+
+	runTests(config)
 }
