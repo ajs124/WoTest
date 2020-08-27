@@ -5,7 +5,7 @@ Testing framework for WoT implementations, namely:
 - sane-city wot-servient
 
 # Features
-The following "protocols" are tested for the Consume and Producer:
+The following "protocols" are tested for the Consumer and Producer:
 - HTTP
 - CoAP
 - MQTT
