@@ -4,3 +4,4 @@ examples
 **/node_modules
 
 implementations/sane-city/*/target
+implementations/wot-py/install
