@@ -25,7 +25,7 @@ FROM wotest-base
 COPY --from=wotest-wot-py implementations/wot-py implementations/
 COPY --from=wotest-node-wot implementations/node-wot implementations/
 COPY --from=wotest-node-wot implementations/node-wot-install implementations/
-COPY --from=wotest-sand-city implementations/sane-city implementations/
+COPY --from=wotest-sane-city implementations/sane-city implementations/
 # copy rest, build/run this
 COPY go.mod src tests .
 RUN nix-shell --run go run
