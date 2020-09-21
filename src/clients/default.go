@@ -1,12 +1,11 @@
 package clients
 
-// always pass a URI
+import "net/url"
+
 type Client interface {
-	connect(uri string) (error, response []byte) // only needed by some protocols(?)
-	read(uri string) (error, []byte)
-	write(uri string, data []byte) error
-	observe(uri string) error // FIXME: needs to return some kind of pipe
-	unobserve(uri string) error
-	subscribe(uri string) error // FIXME: needs to return some kind of pipe
-	unsubscribe(uri string) error
+	connect(url url.URL) (error, response []byte) // only needed by some protocols(?)
+	recv(url url.URL) (error, []byte)
+	send(url url.URL, data []byte) error
+	subscribe(url url.URL) error // FIXME: needs to return some kind of pipe
+	unsubscribe(url url.URL) error
 }
