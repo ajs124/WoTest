@@ -3,7 +3,9 @@ HttpServer = require("@node-wot/binding-http").HttpServer
 Helpers = require("@node-wot/core").Helpers
 
 let servient = new Servient();
-servient.addServer(new HttpServer());
+servient.addServer(new HttpServer({
+    "port": "8080"
+}));
 
 servient.start().then((WoT) => {
     WoT.produce({
