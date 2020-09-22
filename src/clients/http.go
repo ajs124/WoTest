@@ -2,6 +2,7 @@ package clients
 
 import (
 	"bytes"
+	"crypto/tls"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -9,8 +10,12 @@ import (
 
 type HttpClient struct{}
 
-func (c *HttpClient) recv(u url.URL) ([]byte, error) {
-	resp, err := http.Get(u.String())
+func (c *HttpClient) Recv(u url.URL) ([]byte, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	resp, err := client.Get(u.String())
 	if err != nil {
 		return nil, err
 	}
@@ -18,16 +23,20 @@ func (c *HttpClient) recv(u url.URL) ([]byte, error) {
 	return bytes, err
 }
 
-func (c *HttpClient) send(u url.URL, contentType string, data []byte) error {
+func (c *HttpClient) Send(u url.URL, contentType string, data []byte) error {
 	dataReader := bytes.NewReader(data)
 	_, err := http.Post(u.String(), contentType, dataReader)
 	return err
 }
 
-/*
-	connect(uri string) (error, response []byte) // only needed by some protocols(?)
-	read(uri string) (error, []byte)
-	write(uri string, data []byte) error
-	subscribe(uri string) error // FIXME: needs to return some kind of pipe
-	unsubscribe(uri string) error
-*/
+func (c *HttpClient) Connect(u url.URL) ([]byte, error) {
+	return []byte{}, nil
+}
+
+func (c *HttpClient) Subscribe(u url.URL) error {
+	return nil
+}
+
+func (c *HttpClient) Unsubscribe(u url.URL) error {
+	return nil
+}
