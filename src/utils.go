@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/rs/zerolog/log"
 	"io"
 	"os"
@@ -23,14 +24,14 @@ const (
 
 // Execute the command `name` in the folder `dir` while extending the environment with `env` and the arguments `args`
 // returns the cmd struct and error from exec.Start()
-func StartCmd(name, dir string, env []EnvEntry, args ...string) (*exec.Cmd, []io.ReadCloser, error) {
+func StartCmd(name, dir string, ctx context.Context, env []EnvEntry, args ...string) (*exec.Cmd, []io.ReadCloser, error) {
 	var envStrings []string
 	env = append(env, EnvEntry{"LC_ALL", "C"}) // localization breaks everything
 	for _, v := range env {
 		envStrings = append(envStrings, v.key+"="+v.value)
 	}
 	// create context
-	cmd := exec.Command(name, args...)
+	cmd := exec.CommandContext(ctx, name, args...)
 	// set up more stuff
 	cmd.Env = append(os.Environ(), envStrings...)
 	cmd.Dir = dir
@@ -46,18 +47,18 @@ func StartCmd(name, dir string, env []EnvEntry, args ...string) (*exec.Cmd, []io
 }
 
 // Same as StartCmd, but runs node and sets NODE_PATH
-func StartNode(nodePath, dir string, args ...string) (*exec.Cmd, []io.ReadCloser, error) {
+func StartNode(nodePath, dir string, ctx context.Context, args ...string) (*exec.Cmd, []io.ReadCloser, error) {
 	cwd, _ := os.Getwd()
-	return StartCmd("node", dir, []EnvEntry{{"NODE_PATH", cwd+"/"+nodePath}}, args...)
+	return StartCmd("node", dir, ctx, []EnvEntry{{"NODE_PATH", cwd + "/" + nodePath}}, args...)
 }
 
 // Same as StartCmd, but runs python and sets PYTHON_PATH
-func StartPython(pythonPath, dir string, args ...string) (*exec.Cmd, []io.ReadCloser, error) {
+func StartPython(pythonPath, dir string, ctx context.Context, args ...string) (*exec.Cmd, []io.ReadCloser, error) {
 	cwd, _ := os.Getwd()
-	return StartCmd("python", dir, []EnvEntry{{"PYTHONPATH", cwd + "/"+pythonPath}}, args...)
+	return StartCmd("python", dir, ctx, []EnvEntry{{"PYTHONPATH", cwd + "/" + pythonPath}}, args...)
 }
 
 // TODO: pass on classPath
-func StartJava(classPath, dir string, args ...string) (*exec.Cmd, []io.ReadCloser, error) {
-	return StartCmd("java", dir, []EnvEntry{}, args...)
+func StartJava(classPath, dir string, ctx context.Context, args ...string) (*exec.Cmd, []io.ReadCloser, error) {
+	return StartCmd("java", dir, ctx, []EnvEntry{}, args...)
 }
