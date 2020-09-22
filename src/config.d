@@ -1,39 +1,26 @@
 {- vim: set ft=dhall: -}
-let
-    logLevels = {
-        panic =  5,
-        fatal =  4,
-        error =  3,
-        warn  =  2,
-        info  =  1,
-        debug =  0,
-        trace = -1
-    }
-let runtimes = {
-        node = 0,
-        python = 1,
-        java = 2
-    }
-let ImplementationsDir = "../implementations"
+let enums = (./defs.d).enums
+{- let types = (./defs.d).types -}
+let implemenntationsDir = "../implementations"
 in {
-    LogLevel = logLevels.debug,
-    TestsDir = "../tests",
-    ImplementationsDir = ImplementationsDir,
-    Implementations = [
+    logLevel = enums.logLevels.debug,
+    testsDir = "../tests",
+    implementationsDir = implemenntationsDir,
+    implementations = [
         {
             name = "node-wot",
-            path = ImplementationsDir ++ "/node-wot-install/node_modules",
-            runtime = runtimes.node
+            path = implemenntationsDir ++ "/node-wot-install/node_modules",
+            runtime = enums.runtimes.node
         },
         {
             name = "wot-py",
-            path = ImplementationsDir ++ "/wot-py/install",
-            runtime = runtimes.python
+            path = implemenntationsDir ++ "/wot-py/install",
+            runtime = enums.runtimes.python
         },
         {
             name = "sane-city",
             path = "", -- TODO
-            runtime = runtimes.java
+            runtime = enums.runtimes.java
         }
     ]
 }

@@ -1,6 +1,6 @@
 package main
 
-type AuthenticationScheme int8
+type AuthenticationScheme uint
 
 const (
 	None = iota

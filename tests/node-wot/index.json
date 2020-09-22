@@ -1,0 +1,32 @@
+[
+  {
+    "path": "producer_http_plain_empty.js",
+    "type": 0,
+    "timeoutSec": 30,
+    "protocolTestProperties": {
+        "mode": 0,
+        "protocol": 0,
+        "requestUrl": "http://127.0.0.1:8080"
+    }
+  },
+  {
+    "path": "producer_https_plain_empty.js",
+    "type": 0,
+    "timeoutSec": 30,
+    "protocolTestProperties": {
+        "mode": 0,
+        "protocol": 1,
+        "requestUrl": "https://127.0.0.1:8080"
+    }
+  },
+  {
+    "path": "producer_coap_plain_empty.js",
+    "type": 0,
+    "timeoutSec": 30,
+    "protocolTestProperties": {
+        "mode": 0,
+        "protocol": 2,
+        "requestUrl": "coap://127.0.0.1"
+    }
+  }
+]
