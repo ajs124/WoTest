@@ -1,0 +1,15 @@
+{
+  "@context": "https://www.w3.org/2019/wot/td/v1",
+  "title": "empty",
+  "@type": "Thing",
+  "security": [
+    "nosec_sc"
+  ],
+  "id": "urn:uuid:1764b048-0d8c-44d3-9306-6f5cb097676a",
+  "forms": [],
+  "securityDefinitions": {
+    "nosec_sc": {
+      "scheme": "nosec"
+    }
+  }
+}
