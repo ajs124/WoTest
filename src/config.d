@@ -4,6 +4,7 @@ let enums = (./defs.d).enums
 let implemenntationsDir = "../implementations"
 in {
     logLevel = enums.logLevels.debug,
+    testResults = "../results.json",
     testsDir = "../tests",
     implementationsDir = implemenntationsDir,
     implementations = [

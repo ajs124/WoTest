@@ -41,7 +41,9 @@ func StartCmd(name, dir string, ctx context.Context, env []EnvEntry, args ...str
 
 	err := cmd.Start()
 	if err != nil {
-		log.Debug().Err(err).Str("Name", name).Str("Directory", dir).Strs("Environment", envStrings).Strs("args", args)
+		log.Debug().Err(err).Str("Name", name).Str("Directory", dir).Strs("Environment", envStrings).Strs("args", args).Msg("failed to run")
+	} else {
+		log.Debug().Str("Name", name).Str("Directory", dir).Strs("Environment", envStrings).Strs("args", args).Msg("ran")
 	}
 	return cmd, []io.ReadCloser{stdout, stderr}, err
 }

@@ -6,14 +6,23 @@ import (
 	"os"
 )
 
+var logResult zerolog.Logger
+
 func main() {
 	configPath := "config.d"
 	config, err := loadConfig(configPath)
 	if err != nil {
-		log.Error().Msgf("Failed to load/parse config file (%s): %s", configPath, err)
+		log.Error().Err(err).Str("filename", configPath).Msg("Failed to load/parse config file")
 		os.Exit(1)
 	}
 	zerolog.SetGlobalLevel(zerolog.Level(config.LogLevel))
+	log.Logger = log.With().Caller().Logger()
+	resultFile, err := os.OpenFile(config.TestResults, os.O_RDWR|os.O_CREATE, 0640)
+	if err != nil {
+		log.Error().Err(err).Str("filename", config.TestResults).Msg("Failed to open results file")
+		os.Exit(2)
+	}
+	logResult = zerolog.New(resultFile).With().Logger()
 
 	tests := make(map[string][]Test)
 

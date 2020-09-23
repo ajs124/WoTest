@@ -14,11 +14,26 @@ const (
 	TestTypeMeasure
 )
 
+const (
+	ModeClient = iota
+	ModeServer
+)
+
+const (
+	ProtoHttp = iota
+	ProtoHttps
+	ProtoCoap
+	ProtoMqtt
+)
+
 type ProtocolTestProperties struct {
 	Mode               uint               `json:"mode"`
 	Protocol           uint               `json:"protocol"`
 	RequestUrl         string             `json:"requestUrl"`
 	AuthenticationData AuthenticationData `json:"authentication"`
+	ServeAt            string             `json:"serveAt"`
+	ServeContent       string             `json:"serveContent"`
+	MustMatch          []string           `json:"mustMatch"`
 }
 
 type ContentTestProperties struct{}
@@ -41,6 +56,7 @@ type WoTImplementation struct {
 
 type Config struct {
 	TestsDir           string              `dhall:"testsDir"`
+	TestResults        string              `dhall:"testResults"`
 	ImplementationsDir string              `dhall:"implementationsDir"`
 	LogLevel           int8                `dhall:"logLevel"`
 	Implementations    []WoTImplementation `dhall:"implementations"`
