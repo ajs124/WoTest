@@ -7,5 +7,6 @@ let wotHelper = new WotCore.Helpers(servient);
 servient.addClientFactory(new HttpsClientFactory());
 
 wotHelper.fetch("https://127.0.0.1:8081/").then(async (td) => {
-    let thing = await WoT.consume(td);
+    let w = await servient.start();
+    let thing = await w.consume(td);
 });

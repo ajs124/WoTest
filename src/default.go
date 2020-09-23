@@ -16,7 +16,7 @@ func main() {
 		os.Exit(1)
 	}
 	zerolog.SetGlobalLevel(zerolog.Level(config.LogLevel))
-	log.Logger = log.With().Caller().Logger()
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}).With().Caller().Logger()
 	resultFile, err := os.OpenFile(config.TestResults, os.O_RDWR|os.O_CREATE, 0640)
 	if err != nil {
 		log.Error().Err(err).Str("filename", config.TestResults).Msg("Failed to open results file")

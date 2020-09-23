@@ -41,7 +41,10 @@
       "protocol": 0,
       "serveAt": "127.0.0.1:8081",
       "serveContent": "./empty_td.json",
-      "mustMatch": [ "received Content-Type: application/json" ]
+      "mustMatch": [
+          "received Content-Type: application/json",
+          "consuming TD"
+      ]
     }
   },
   {
@@ -53,7 +56,12 @@
       "protocol": 1,
       "serveAt": "127.0.0.1:8081",
       "serveContent": "./empty_td.json",
-      "mustMatch": [ "received Content-Type: application/json" ]
+      "tlsKey": "../tests/rsa.key",
+      "tlsCert": "../tests/rsa.crt",
+      "mustMatch": [
+          "received Content-Type: application/json",
+          "consuming TD"
+      ]
     }
   },
 
@@ -64,9 +72,12 @@
     "protocolTestProperties": {
       "mode": 1,
       "protocol": 2,
-      "serveAt": "127.0.0.1",
+      "serveAt": "127.0.0.1:5683",
       "serveContent": "./empty_td.json",
-      "mustMatch": [ "received Content-Type: application/json" ]
+      "mustMatch": [
+          "received Content-Format: application/json",
+          "consuming TD"
+      ]
     }
   }
 ]

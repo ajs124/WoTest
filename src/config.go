@@ -34,6 +34,8 @@ type ProtocolTestProperties struct {
 	ServeAt            string             `json:"serveAt"`
 	ServeContent       string             `json:"serveContent"`
 	MustMatch          []string           `json:"mustMatch"`
+	TlsKey             string             `json:"tlsKey"`
+	TlsCert            string             `json:"tlsCert"`
 }
 
 type ContentTestProperties struct{}

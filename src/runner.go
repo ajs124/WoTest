@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/ajs124/WoTest/clients"
 	"github.com/ajs124/WoTest/servers"
+	"github.com/plgd-dev/go-coap/v2/mux"
 	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
@@ -35,7 +36,7 @@ func (res *TestResult) waitForOutput(out []io.ReadCloser, match string) (bool, e
 			n, err = o.Read(buf)
 			if err != nil {
 				log.Debug().Err(err).Msg("Error while trying to read")
-				break
+				// break
 			}
 			i := 0
 			for i < n {
@@ -45,7 +46,7 @@ func (res *TestResult) waitForOutput(out []io.ReadCloser, match string) (bool, e
 			/* if n > 0 {
 				log.Debug().Int("n", n).Str("now", string(sout[j])).Msg("Read bytes")
 			} */
-			if rexpr.Match(sout[j]) {
+			if rexpr.Match(append([]byte(res.stdout), sout[j]...)) {
 				m = true
 				break
 			}
@@ -113,7 +114,11 @@ func runProtocolServerTest(test Test, impl WoTImplementation, config Config, exe
 
 	if test.ProtocolTestProperties.Protocol == ProtoHttp || test.ProtocolTestProperties.Protocol == ProtoHttps {
 		var server servers.HttpServer
-		err = server.Listen(test.ProtocolTestProperties.ServeAt)
+		if test.ProtocolTestProperties.Protocol == ProtoHttp {
+			err = server.Listen(test.ProtocolTestProperties.ServeAt, false, "", "")
+		} else { // TLS
+			err = server.Listen(test.ProtocolTestProperties.ServeAt, true, test.ProtocolTestProperties.TlsCert, test.ProtocolTestProperties.TlsKey)
+		}
 		defer server.Stop()
 		if err != nil {
 			log.Err(err).Msg("http server error")
@@ -130,6 +135,9 @@ func runProtocolServerTest(test Test, impl WoTImplementation, config Config, exe
 		if err != nil {
 			log.Err(err).Msg("coap server error")
 		}
+		server.SetHandleFunc(func(w mux.ResponseWriter, r *mux.Message) {
+			server.ServeFile(w, r, test.ProtocolTestProperties.ServeContent)
+		})
 	} else if test.ProtocolTestProperties.Protocol == ProtoMqtt {
 		return result, errors.New("not implemented")
 	} else {
