@@ -13,6 +13,47 @@
     }
   },
   {
+    "path": "producer_http_basic_empty.js",
+    "type": 0,
+    "timeoutSec": 10,
+    "protocolTestProperties": {
+      "mode": 0,
+      "protocol": 0,
+      "requestUrl": "http://127.0.0.1:8080/http_basic_empty/all/properties",
+      "mustMatch": [
+        "http_basic_empty ready"
+      ],
+      "authentication": {
+          "scheme": 0,
+          "data": {
+              "user": "Ooz8aideeMuuRahwae3u",
+              "password": "ih4ieZ7Pe7wigi8aengu"
+          }
+      }
+    }
+  },
+  {
+    "path": "producer_http_basic_empty.js",
+    "type": 0,
+    "timeoutSec": 10,
+    "protocolTestProperties": {
+      "mode": 0,
+      "protocol": 0,
+      "requestUrl": "http://127.0.0.1:8080/http_basic_empty/all/properties",
+      "requestMustFail": true,
+      "mustMatch": [
+        "http_basic_empty ready"
+      ],
+      "authentication": {
+          "scheme": 0,
+          "data": {
+              "user": "Ooz8aideeMuuRahwae3u",
+              "password": "ih4ieZ7Pe7wigi8aengu"
+          }
+      }
+    }
+  },
+  {
     "path": "producer_https_plain_empty.js",
     "type": 0,
     "timeoutSec": 10,
@@ -81,6 +122,7 @@
       "tlsKey": "../tests/rsa.key",
       "tlsCert": "../tests/rsa.crt",
       "mustMatch": [
+          "allowing self-signed/untrusted certificates",
           "received Content-Type: application/json",
           "consuming TD"
       ]
