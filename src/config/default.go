@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"encoding/json"
@@ -24,6 +24,13 @@ const (
 	ProtoHttps
 	ProtoCoap
 	ProtoMqtt
+)
+
+// When modifying this, also update config.d
+const (
+	Node = iota
+	Python
+	Java
 )
 
 type ProtocolTestProperties struct {
@@ -52,9 +59,9 @@ type Test struct {
 }
 
 type WoTImplementation struct {
-	Name    string  `dhall:"name"`
-	Path    string  `dhall:"path"` // this is the "install" or "library" path, not the path of the tests
-	Runtime Runtime `dhall:"runtime"`
+	Name    string `dhall:"name"`
+	Path    string `dhall:"path"` // this is the "install" or "library" path, not the path of the tests
+	Runtime uint   `dhall:"runtime"`
 }
 
 type Config struct {
@@ -65,7 +72,7 @@ type Config struct {
 	Implementations    []WoTImplementation `dhall:"implementations"`
 }
 
-func loadConfig(configPath string) (Config, error) {
+func LoadConfig(configPath string) (Config, error) {
 	var config Config
 	bytes, err := ioutil.ReadFile(configPath)
 	if err != nil {
@@ -78,7 +85,7 @@ func loadConfig(configPath string) (Config, error) {
 	return config, err
 }
 
-func loadTestIndex(path string) ([]Test, error) {
+func LoadTestIndex(path string) ([]Test, error) {
 	tests := make([]Test, 0)
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -91,7 +98,7 @@ func loadTestIndex(path string) ([]Test, error) {
 	return tests, err
 }
 
-func checkDir(path string) error {
+func CheckDir(path string) error {
 	f, err := os.Open(path)
 	if err != nil {
 		log.Error().Str("path", path).Err(err).Msg("Error opening")

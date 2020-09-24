@@ -1,4 +1,4 @@
-package main
+package runner
 
 import (
 	"context"
@@ -13,15 +13,6 @@ type EnvEntry struct {
 	key   string
 	value string
 }
-
-type Runtime int8
-
-// When modifying this, also update config.d
-const (
-	Node = iota
-	Python
-	Java
-)
 
 // poll pipe once every ms and write into byte buffer
 func readPipe(r io.ReadCloser, ob *[]byte) {
