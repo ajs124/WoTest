@@ -16,6 +16,7 @@ import (
 type CoapServer struct {
 	router *mux.Router
 	server *udp.Server
+	conn   *net.UDPConn
 }
 
 func logRequest(next mux.Handler) mux.Handler {
@@ -95,6 +96,7 @@ func (s *CoapServer) Listen(address string) error {
 		log.Error().Err(err).Msg("error listening on udp")
 		return err
 	}
+	s.conn = l
 	server := udp.NewServer(udp.WithMux(s.router))
 	s.server = server
 	go server.Serve(l) // FIXME: handle errors? but we need to `go`
@@ -111,5 +113,6 @@ func (s *CoapServer) Send(path string, contents []byte) error {
 
 func (s *CoapServer) Stop() error {
 	s.server.Stop()
+	s.conn.Close()
 	return nil
 }
