@@ -22,6 +22,8 @@ func main() {
 		log.Error().Err(err).Str("filename", config.TestResults).Msg("Failed to open results file")
 		os.Exit(2)
 	}
+	resultFile.Truncate(0)
+	defer resultFile.Close()
 	logResult = zerolog.New(resultFile).With().Logger()
 
 	tests := make(map[string][]Test)
