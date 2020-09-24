@@ -1,0 +1,92 @@
+[
+  {
+    "path": "producer_http_plain_empty.py",
+    "type": 0,
+    "timeoutSec": 30,
+    "protocolTestProperties": {
+      "mode": 0,
+      "protocol": 0,
+      "requestUrl": "http://127.0.0.1:9494",
+      "mustMatch": [
+        "Creating HTTP server on",
+        "INFO:root:Exposing and configuring Thing"
+      ]
+    }
+  },
+  {
+    "path": "producer_https_plain_empty.py",
+    "type": 0,
+    "timeoutSec": 10,
+    "protocolTestProperties": {
+      "mode": 0,
+      "protocol": 1,
+      "requestUrl": "https://127.0.0.1:9494",
+      "mustMatch": [
+        "Creating HTTPs server on",
+        "INFO:root:Exposing and configuring Thing"
+      ]
+    }
+  },
+  {
+    "path": "producer_coap_plain_empty.py",
+    "type": 0,
+    "timeoutSec": 10,
+    "protocolTestProperties": {
+      "mode": 0,
+      "protocol": 2,
+      "requestUrl": "coap://127.0.0.1:9393",
+      "mustMatch": [
+        "Creating COAP server on",
+        "INFO:root:Exposing and configuring Thing"
+      ]
+    }
+  },
+  {
+    "path": "consumer_http.py",
+    "type": 0,
+    "timeoutSec": 10,
+    "protocolTestProperties": {
+      "mode": 1,
+      "protocol": 0,
+      "serveAt": "127.0.0.1:8081",
+      "serveContent": "./empty_td.pyon",
+      "mustMatch": [
+        "received Content-Type: application/json",
+        "consuming TD"
+      ]
+    }
+  },
+  {
+    "path": "consumer_https.py",
+    "type": 0,
+    "timeoutSec": 10,
+    "protocolTestProperties": {
+      "mode": 1,
+      "protocol": 1,
+      "serveAt": "127.0.0.1:8081",
+      "serveContent": "./empty_td.pyon",
+      "tlsKey": "../tests/rsa.key",
+      "tlsCert": "../tests/rsa.crt",
+      "mustMatch": [
+        "received Content-Type: application/json",
+        "consuming TD"
+      ]
+    }
+  },
+
+  {
+    "path": "consumer_coap.py",
+    "type": 0,
+    "timeoutSec": 10,
+    "protocolTestProperties": {
+      "mode": 1,
+      "protocol": 2,
+      "serveAt": "127.0.0.1:5683",
+      "serveContent": "./empty_td.pyon",
+      "mustMatch": [
+        "received Content-Format: application/json",
+        "consuming TD"
+      ]
+    }
+  }
+]

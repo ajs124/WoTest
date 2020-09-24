@@ -2,6 +2,7 @@
 import json
 import logging
 import tornado.gen
+import ssl
 from tornado.ioloop import IOLoop, PeriodicCallback
 
 from wotpy.protocols.http.server import HTTPServer
@@ -14,7 +15,7 @@ logging.basicConfig()
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
 
-ID_THING = "urn:http_plain_empty"
+ID_THING = "urn:https_plain_empty"
 
 DESCRIPTION = {
     "title": ID_THING,
@@ -23,8 +24,10 @@ DESCRIPTION = {
 
 @tornado.gen.coroutine
 def main():
-    LOGGER.info("Creating HTTP server on: {}".format(HTTP_PORT))
-    http_server = HTTPServer(port=HTTP_PORT)
+    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_context.load_cert_chain(certfile="../rsa.crt", keyfile="../rsa.key")
+    LOGGER.info("Creating HTTPs server on: {}".format(HTTP_PORT))
+    http_server = HTTPServer(port=HTTP_PORT, ssl_context=ssl_context)
 
     LOGGER.info("Creating servient with TD catalogue on: {}".format(CATALOGUE_PORT))
     servient = Servient(catalogue_port=CATALOGUE_PORT)

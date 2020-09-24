@@ -4,17 +4,17 @@ import logging
 import tornado.gen
 from tornado.ioloop import IOLoop, PeriodicCallback
 
-from wotpy.protocols.http.server import HTTPServer
+from wotpy.protocols.coap.server import CoAPServer
 from wotpy.wot.servient import Servient
 
 CATALOGUE_PORT = 9090
-HTTP_PORT = 9494
+COAP_PORT = 9393
 
 logging.basicConfig()
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.INFO)
 
-ID_THING = "urn:http_plain_empty"
+ID_THING = "urn:coap_plain_empty"
 
 DESCRIPTION = {
     "title": ID_THING,
@@ -23,12 +23,12 @@ DESCRIPTION = {
 
 @tornado.gen.coroutine
 def main():
-    LOGGER.info("Creating HTTP server on: {}".format(HTTP_PORT))
-    http_server = HTTPServer(port=HTTP_PORT)
+    LOGGER.info("Creating COAP server on: {}".format(COAP_PORT))
+    coap_server = CoAPServer(port=COAP_PORT)
 
     LOGGER.info("Creating servient with TD catalogue on: {}".format(CATALOGUE_PORT))
     servient = Servient(catalogue_port=CATALOGUE_PORT)
-    servient.add_server(http_server)
+    servient.add_server(coap_server)
 
     LOGGER.info("Starting servient")
     wot = yield servient.start()
