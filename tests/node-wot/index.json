@@ -65,12 +65,27 @@
       "tlsKey": "../tests/rsa.key",
       "tlsCert": "../tests/rsa.crt",
       "mustMatch": [
+          "failed, reason: self signed certificate"
+      ]
+    }
+  },
+  {
+    "path": "consumer_https_selfsigned.js",
+    "type": 0,
+    "timeoutSec": 10,
+    "protocolTestProperties": {
+      "mode": 1,
+      "protocol": 1,
+      "serveAt": "127.0.0.1:8081",
+      "serveContent": "./empty_td.json",
+      "tlsKey": "../tests/rsa.key",
+      "tlsCert": "../tests/rsa.crt",
+      "mustMatch": [
           "received Content-Type: application/json",
           "consuming TD"
       ]
     }
   },
-
   {
     "path": "consumer_coap.js",
     "type": 0,
