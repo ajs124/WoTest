@@ -3,17 +3,16 @@ package config
 type AuthenticationScheme uint
 
 const (
-	None = iota
-	Basic
-	Digest
-	Bearer
-	Apikey
-	Psk
-	Oauth1
+	AuthNone = iota
+	AuthBasic
+	AuthDigest
+	AuthBearer
+	AuthApikey
+	AuthPsk
+	AuthOauth1
 )
 
 type AuthenticationData struct {
-	scheme AuthenticationScheme
-	// maybe that should be map[string][]byte ?
-	data map[string]string
+	Scheme AuthenticationScheme `json:"scheme"`
+	Data   map[string]string    `json:"data"`
 }

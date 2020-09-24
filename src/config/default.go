@@ -37,6 +37,7 @@ type ProtocolTestProperties struct {
 	Mode               uint               `json:"mode"`
 	Protocol           uint               `json:"protocol"`
 	RequestUrl         string             `json:"requestUrl"`
+	RequestMustFail    bool               `json:"requestMustFail"`
 	AuthenticationData AuthenticationData `json:"authentication"`
 	ServeAt            string             `json:"serveAt"`
 	ServeContent       string             `json:"serveContent"`

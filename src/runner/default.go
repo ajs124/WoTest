@@ -75,6 +75,7 @@ func RunTests(config Config, tests map[string][]Test, logResult zerolog.Logger) 
 			if test.Type == TestTypeProtocol {
 				fields["protocol"] = test.ProtocolTestProperties.Protocol
 				fields["mode"] = test.ProtocolTestProperties.Mode
+				fields["requestMustFail"] = test.ProtocolTestProperties.RequestMustFail
 			}
 			logResult.Log().Bool("succeeded", result.succeeded).
 				Str("stdout", result.stdout).

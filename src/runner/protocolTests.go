@@ -54,7 +54,7 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 			log.Err(err).Msg("coap client failed to connect")
 		}
 		r, err := client.Recv(*reqUrl)
-		if err != nil {
+		if err != nil && !test.ProtocolTestProperties.RequestMustFail {
 			log.Err(err).Msg("coap client failed to GET data")
 		} else {
 			result.succeeded = len(test.ProtocolTestProperties.MustMatch) == matches
@@ -67,6 +67,8 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 		panic(errors.New("test has invalid protocol"))
 	}
 
+	result.stdout = string(stdout)
+	result.stderr = string(stderr)
 	err = cmd.Process.Kill()
 	return result, nil
 }
@@ -126,6 +128,9 @@ func runProtocolServerTest(test Test, impl WoTImplementation, config Config, exe
 		}
 	}
 	result.succeeded = len(test.ProtocolTestProperties.MustMatch) == matches
+
+	result.stdout = string(stdout)
+	result.stderr = string(stderr)
 	err = cmd.Process.Kill()
 	return result, err
 }
