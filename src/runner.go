@@ -7,7 +7,6 @@ import (
 	"github.com/ajs124/WoTest/servers"
 	"github.com/plgd-dev/go-coap/v2/mux"
 	"github.com/rs/zerolog/log"
-	"io"
 	"net/http"
 	"net/url"
 	"os/exec"
@@ -21,56 +20,50 @@ type TestResult struct {
 	succeeded bool
 }
 
-func (res *TestResult) waitForOutput(out []io.ReadCloser, match string) (bool, error) {
+type ExecFunc func(string, string, context.Context, *[]byte, *[]byte, ...string) (*exec.Cmd, error)
+
+func (res *TestResult) waitForOutput(ctx context.Context, stdout, stderr *[]byte, match string) bool {
 	rexpr, err := regexp.Compile(match)
 	if err != nil {
 		log.Err(err)
 	}
-	buf := make([]byte, 4096)
-	err = nil
-	m := false
-	n := 0
-	sout := make([][]byte, 2)
-	for err == nil && !m {
-		for j, o := range out {
-			n, err = o.Read(buf)
-			if err != nil {
-				log.Debug().Err(err).Msg("Error while trying to read")
-				// break
-			}
-			i := 0
-			for i < n {
-				sout[j] = append(sout[j], buf[i])
-				i++
-			}
-			/* if n > 0 {
-				log.Debug().Int("n", n).Str("now", string(sout[j])).Msg("Read bytes")
-			} */
-			if rexpr.Match(append([]byte(res.stdout), sout[j]...)) {
-				m = true
-				break
+	ticker := time.NewTicker(100 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return false
+		case <-ticker.C: // maybe the regex will match now?
+			res.stdout = string(*stdout)
+			res.stderr = string(*stderr)
+			if rexpr.Match(*stdout) || rexpr.Match(*stderr) {
+				return true
 			}
 		}
-		time.Sleep(10 * time.Millisecond) // FIXME: why?
 	}
-	res.stdout += string(sout[0])
-	res.stderr += string(sout[1])
-	return m, err
 }
 
-func runProtocolClientTest(test Test, impl WoTImplementation, config Config, execFunc func(string, string, context.Context, ...string) (*exec.Cmd, []io.ReadCloser, error)) (TestResult, error) {
+func runProtocolClientTest(test Test, impl WoTImplementation, config Config, execFunc ExecFunc) (TestResult, error) {
 	result := TestResult{"", "", false}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(test.Timeout))
 	defer cancel()
-	cmd, out, err := execFunc(impl.Path, config.TestsDir+"/"+impl.Name, ctx, test.Path)
+	stdout := make([]byte, 0)
+	stderr := make([]byte, 0)
+	cmd, err := execFunc(impl.Path, config.TestsDir+"/"+impl.Name, ctx, &stdout, &stderr, test.Path)
 	if err != nil {
 		log.Error().Err(err).Str("name", impl.Name).Msg("Starting test command failed")
 	}
 
-	found, err := result.waitForOutput(out, ".* ready.*")
-	log.Debug().Bool("found", found).Msg("ready")
-
+	matches := 0
+	for _, mM := range test.ProtocolTestProperties.MustMatch {
+		found := result.waitForOutput(ctx, &stdout, &stderr, mM)
+		log.Debug().Str("mM", mM).Bool("found", found).Msg("found")
+		if found {
+			matches += 1
+		}
+	}
+	log.Debug().Int("matches", matches).Int("out of", len(test.ProtocolTestProperties.MustMatch)).Msg("")
 	reqUrl, _ := url.Parse(test.ProtocolTestProperties.RequestUrl)
 
 	var client clients.Client
@@ -80,8 +73,9 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 		r, err := client.Recv(*reqUrl)
 		if err != nil {
 			log.Err(err).Msg("http client error")
+			time.Sleep(time.Minute)
 		} else {
-			result.succeeded = true
+			result.succeeded = len(test.ProtocolTestProperties.MustMatch) == matches
 			log.Debug().Str("http client output", string(r))
 		}
 	} else if test.ProtocolTestProperties.Protocol == ProtoCoap {
@@ -94,7 +88,7 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 		if err != nil {
 			log.Err(err).Msg("coap client failed to GET data")
 		} else {
-			result.succeeded = true
+			result.succeeded = len(test.ProtocolTestProperties.MustMatch) == matches
 			log.Debug().Str("coap client output", string(r))
 		}
 	} else if test.ProtocolTestProperties.Protocol == ProtoMqtt {
@@ -108,7 +102,7 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 	return result, nil
 }
 
-func runProtocolServerTest(test Test, impl WoTImplementation, config Config, execFunc func(string, string, context.Context, ...string) (*exec.Cmd, []io.ReadCloser, error)) (TestResult, error) {
+func runProtocolServerTest(test Test, impl WoTImplementation, config Config, execFunc ExecFunc) (TestResult, error) {
 	result := TestResult{"", "", false}
 	var err error
 
@@ -145,18 +139,19 @@ func runProtocolServerTest(test Test, impl WoTImplementation, config Config, exe
 		panic(errors.New("test has invalid protocol"))
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*time.Duration(test.Timeout))
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(test.Timeout))
 	defer cancel()
-	cmd, out, err := execFunc(impl.Path, config.TestsDir+"/"+impl.Name, ctx, test.Path)
+	stdout := make([]byte, 0)
+	stderr := make([]byte, 0)
+	cmd, err := execFunc(impl.Path, config.TestsDir+"/"+impl.Name, ctx, &stdout, &stderr, test.Path)
 	if err != nil {
 		log.Error().Err(err).Str("name", impl.Name).Msg("Starting test command failed")
 	}
 
 	matches := 0
 	for _, mM := range test.ProtocolTestProperties.MustMatch {
-		found := false
-		found, err = result.waitForOutput(out, mM)
-		log.Debug().Bool("found", found).Msg(mM)
+		found := result.waitForOutput(ctx, &stdout, &stderr, mM)
+		log.Debug().Str("mM", mM).Bool("found", found).Msg("found")
 		if found {
 			matches += 1
 		}
@@ -166,7 +161,7 @@ func runProtocolServerTest(test Test, impl WoTImplementation, config Config, exe
 	return result, err
 }
 
-func runTest(test Test, impl WoTImplementation, config Config, execFunc func(string, string, context.Context, ...string) (*exec.Cmd, []io.ReadCloser, error)) (TestResult, error) {
+func runTest(test Test, impl WoTImplementation, config Config, execFunc ExecFunc) (TestResult, error) {
 	if test.Type == TestTypeProtocol {
 		if test.ProtocolTestProperties.Mode == ModeClient {
 			return runProtocolClientTest(test, impl, config, execFunc)
@@ -182,7 +177,7 @@ func runTest(test Test, impl WoTImplementation, config Config, execFunc func(str
 
 func runTests(config Config, tests map[string][]Test) {
 	for _, impl := range config.Implementations {
-		var execFunc func(string, string, context.Context, ...string) (*exec.Cmd, []io.ReadCloser, error)
+		var execFunc ExecFunc
 		switch impl.Runtime {
 		case Node:
 			execFunc = StartNode
@@ -195,6 +190,7 @@ func runTests(config Config, tests map[string][]Test) {
 		}
 
 		for _, test := range tests[impl.Name] {
+			log.Info().Str("implementation", impl.Name).Str("path", test.Path).Msg("Starting test")
 			result, err := runTest(test, impl, config, execFunc)
 			fields := make(map[string]interface{})
 			if test.Type == TestTypeProtocol {
@@ -205,6 +201,7 @@ func runTests(config Config, tests map[string][]Test) {
 				Str("stdout", result.stdout).
 				Str("stderr", result.stderr).
 				Str("path", test.Path).
+				Str("implementation", impl.Name).
 				Fields(fields).
 				Uint("type", test.Type).Msg("")
 			if err != nil || !result.succeeded {
