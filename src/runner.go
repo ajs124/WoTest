@@ -50,7 +50,7 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 	defer cancel()
 	stdout := make([]byte, 0)
 	stderr := make([]byte, 0)
-	cmd, err := execFunc(impl.Path, config.TestsDir+"/"+impl.Name, ctx, &stdout, &stderr, test.Path)
+	cmd, err := execFunc(impl.Path, config.TestsDir+"/"+impl.Name, ctx, &stdout, &stderr, append([]string{test.Path}, test.Args...)...)
 	if err != nil {
 		log.Error().Err(err).Str("name", impl.Name).Msg("Starting test command failed")
 	}
@@ -73,7 +73,6 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 		r, err := client.Recv(*reqUrl)
 		if err != nil {
 			log.Err(err).Msg("http client error")
-			time.Sleep(time.Minute)
 		} else {
 			result.succeeded = len(test.ProtocolTestProperties.MustMatch) == matches
 			log.Debug().Str("http client output", string(r))
@@ -143,7 +142,7 @@ func runProtocolServerTest(test Test, impl WoTImplementation, config Config, exe
 	defer cancel()
 	stdout := make([]byte, 0)
 	stderr := make([]byte, 0)
-	cmd, err := execFunc(impl.Path, config.TestsDir+"/"+impl.Name, ctx, &stdout, &stderr, test.Path)
+	cmd, err := execFunc(impl.Path, config.TestsDir+"/"+impl.Name, ctx, &stdout, &stderr, append([]string{test.Path}, test.Args...)...)
 	if err != nil {
 		log.Error().Err(err).Str("name", impl.Name).Msg("Starting test command failed")
 	}
@@ -201,6 +200,7 @@ func runTests(config Config, tests map[string][]Test) {
 				Str("stdout", result.stdout).
 				Str("stderr", result.stderr).
 				Str("path", test.Path).
+				Strs("args", test.Args).
 				Str("implementation", impl.Name).
 				Fields(fields).
 				Uint("type", test.Type).Msg("")

@@ -44,6 +44,7 @@ type MeasureTestProperties struct{}
 type Test struct {
 	Timeout                uint                   `json:"timeoutSec"`
 	Path                   string                 `json:"path"`
+	Args                   []string               `json:"args"`
 	Type                   uint                   `json:"type"`
 	ProtocolTestProperties ProtocolTestProperties `json:"protocolTestProperties"`
 	ContentTestProperties  ContentTestProperties  `json:"contentTestProperties"`
