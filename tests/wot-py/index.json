@@ -42,50 +42,50 @@
     }
   },
   {
-    "path": "consumer_http.py",
+    "path": "consumer_generic.py",
+    "args": [ "http://127.0.0.1:8081" ],
     "type": 0,
     "timeoutSec": 10,
     "protocolTestProperties": {
       "mode": 1,
       "protocol": 0,
       "serveAt": "127.0.0.1:8081",
-      "serveContent": "./empty_td.pyon",
+      "serveContent": "./empty_td.json",
       "mustMatch": [
-        "received Content-Type: application/json",
-        "consuming TD"
+        "ConsumedThing:"
       ]
     }
   },
   {
-    "path": "consumer_https.py",
+    "path": "consumer_generic.py",
+    "args": [ "https://127.0.0.1:8081" ],
     "type": 0,
     "timeoutSec": 10,
     "protocolTestProperties": {
       "mode": 1,
       "protocol": 1,
       "serveAt": "127.0.0.1:8081",
-      "serveContent": "./empty_td.pyon",
+      "serveContent": "./empty_td.json",
       "tlsKey": "../tests/rsa.key",
       "tlsCert": "../tests/rsa.crt",
       "mustMatch": [
-        "received Content-Type: application/json",
-        "consuming TD"
+        "CERTIFICATE_VERIFY_FAILED"
       ]
     }
   },
 
   {
-    "path": "consumer_coap.py",
+    "path": "consumer_generic.py",
+    "args": [ "coap://127.0.0.1:5683" ],
     "type": 0,
     "timeoutSec": 10,
     "protocolTestProperties": {
       "mode": 1,
       "protocol": 2,
       "serveAt": "127.0.0.1:5683",
-      "serveContent": "./empty_td.pyon",
+      "serveContent": "./empty_td.json",
       "mustMatch": [
-        "received Content-Format: application/json",
-        "consuming TD"
+        "ConsumedThing:"
       ]
     }
   }
