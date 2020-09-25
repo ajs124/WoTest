@@ -1,5 +1,52 @@
 [
   {
+    "path": "producer_https_largeProp.js",
+    "args": [ "1048576" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 1,
+      "requestUrl": "https://127.0.0.1:8080/https_largeProp/all/properties",
+      "mustMatch": [
+        "https_largeProp ready"
+      ],
+      "requestSets": [
+          { "num": 1000, "parallel": 1 },
+          { "num": 1000, "parallel": 2 },
+          { "num": 1000, "parallel": 4 },
+          { "num": 1000, "parallel": 8 },
+          { "num": 2000, "parallel": 16 },
+          { "num": 10000, "parallel": 64 }
+      ]
+    }
+  },
+  {
+    "path": "producer_http_largeProp.js",
+    "args": [ "33554432" ],
+    "type": 0,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 1,
+      "mode": 2,
+      "requestUrl": "https://127.0.0.1:8080/https_largeProp/properties/bench",
+      "mustMatch": [
+        "long random string",
+        "https_largeProp ready"
+      ],
+      "requestSets": [
+          { "num": 1000, "parallel": 1 },
+          { "num": 1000, "parallel": 2 },
+          { "num": 1000, "parallel": 4 },
+          { "num": 1000, "parallel": 8 },
+          { "num": 2000, "parallel": 16 },
+          { "num": 10000, "parallel": 64 },
+          { "num": 20000, "parallel": 512 },
+          { "num": 20000, "parallel": 2048 },
+          { "num": 50000, "parallel": 8192 }
+      ]
+    }
+  },
+  {
     "path": "producer_http_plain_empty.js",
     "type": 0,
     "timeoutSec": 10,
