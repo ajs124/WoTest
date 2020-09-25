@@ -1,13 +1,11 @@
 package clients
 
 import (
-	"bytes"
 	"context"
+	"errors"
 	"github.com/plgd-dev/go-coap/v2/udp"
 	"github.com/plgd-dev/go-coap/v2/udp/client"
 	"github.com/rs/zerolog/log"
-	"net/http"
-
 	"net/url"
 	"time"
 )
@@ -31,16 +29,20 @@ func (c *CoapClient) Connect(u url.URL) ([]byte, error) {
 	return []byte{}, err
 }
 
-func (c *CoapClient) Recv(u url.URL) ([]byte, error) {
+func (c *CoapClient) Recv(u url.URL) ([]byte, MeasurementData, error) {
+	var md MeasurementData
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
+	md.StartTime = time.Now().UTC()
 	msg, err := c.co.Get(ctx, u.Path) // maybe EscapedPath? who knows…
 	if err != nil {
 		log.Err(err).Msg("Coap: cannot get response")
-		return []byte{}, err
+		return nil, md, err
 	}
 	resp, err := msg.ReadBody()
-	return resp, err
+	md.StopTime = time.Now().UTC()
+	md.Size = uint(len(resp))
+	return resp, md, err
 }
 
 /* func (c *CoapClient) Send(u url.URL, contentType string, data []byte) error {
@@ -50,10 +52,10 @@ func (c *CoapClient) Recv(u url.URL) ([]byte, error) {
 	return err
 } */
 
-func (c *CoapClient) Send(u url.URL, contentType string, data []byte) error {
-	dataReader := bytes.NewReader(data)
-	_, err := http.Post(u.String(), contentType, dataReader)
-	return err
+func (c *CoapClient) Send(u url.URL, contentType string, data []byte) (MeasurementData, error) {
+	var md MeasurementData
+	// dataReader := bytes.NewReader(data)
+	return md, errors.New("not implemented yet")
 }
 
 func (c *CoapClient) Subscribe(u url.URL) error {
@@ -62,4 +64,8 @@ func (c *CoapClient) Subscribe(u url.URL) error {
 
 func (c *CoapClient) Unsubscribe(u url.URL) error {
 	return nil
+}
+
+func (c *CoapClient) Disconnect() error {
+	return c.co.Close()
 }

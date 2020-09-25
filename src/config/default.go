@@ -10,13 +10,15 @@ import (
 
 const (
 	TestTypeProtocol = iota
-	TestTypeContents
 	TestTypeMeasure
+	TestTypeContents
 )
 
 const (
 	ModeClient = iota
 	ModeServer
+	ModePull
+	ModePush
 )
 
 const (
@@ -47,7 +49,24 @@ type ProtocolTestProperties struct {
 }
 
 type ContentTestProperties struct{}
-type MeasureTestProperties struct{}
+
+type RequestSet struct {
+	Num      int `json:"num"`
+	Parallel int `json:"parallel"`
+}
+
+type MeasureTestProperties struct {
+	Protocol           uint               `json:"protocol"`
+	Mode               uint               `json:"mode"`
+	RequestUrl         string             `json:"requestUrl"`
+	AuthenticationData AuthenticationData `json:"authentication"`
+	ServeAt            string             `json:"serveAt"`
+	ServeContent       string             `json:"serveContent"`
+	MustMatch          []string           `json:"mustMatch"`
+	TlsKey             string             `json:"tlsKey"`
+	TlsCert            string             `json:"tlsCert"`
+	RequestSets        []RequestSet       `json:"requestSets"`
+}
 
 type Test struct {
 	Timeout                uint                   `json:"timeoutSec"`

@@ -3,18 +3,54 @@ package runner
 import (
 	"context"
 	"errors"
+	"github.com/ajs124/WoTest/clients"
 	. "github.com/ajs124/WoTest/config"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"time"
 )
 
+type TestMeasurements struct {
+	total  time.Duration
+	median time.Duration
+	nfth   time.Duration
+	nnth   time.Duration
+	mean   time.Duration
+	stddev time.Duration
+	raw    []clients.MeasurementData
+}
+
+func (tm *TestMeasurements) MarshalJSON() ([]byte, error) {
+	output := "{"
+	output += "\"total\":\"" + tm.total.String() + "\","
+	output += "\"median\":\"" + tm.median.String() + "\","
+	output += "\"95%\":\"" + tm.nfth.String() + "\","
+	output += "\"99%\":\"" + tm.nnth.String() + "\","
+	output += "\"mean\":\"" + tm.mean.String() + "\","
+	output += "\"stddev\":\"" + tm.stddev.String() + "\","
+	output += "\"raw\":["
+	for i, r := range tm.raw {
+		output += "{ \"start\": \"" + r.StartTime.String() + "\","
+		output += "\"stop\": \"" + r.StopTime.String() + "\","
+		output += "\"duration\": \"" + r.StopTime.Sub(r.StartTime).String() + "\","
+		output += "\"size\": \"" + strconv.Itoa(int(r.Size)) + "\"}"
+		if i != len(tm.raw)-1 {
+			output += ","
+		}
+	}
+	output += "]"
+	output += "}"
+	return []byte(output), nil
+}
+
 type TestResult struct {
-	stdout    string
-	stderr    string
-	succeeded bool
+	stdout       string
+	stderr       string
+	succeeded    bool
+	measurements map[int]*TestMeasurements
 }
 
 type ExecFunc func(string, string, context.Context, *[]byte, *[]byte, ...string) (*exec.Cmd, error)
@@ -50,8 +86,13 @@ func runTest(test Test, impl WoTImplementation, config Config, execFunc ExecFunc
 			// wtf?
 			panic(errors.New("test has invalid mode"))
 		}
+	} else if test.Type == TestTypeMeasure {
+		return runMeasureTest(test, impl, config, execFunc)
+	} else if test.Type == TestTypeContents {
+		panic(errors.New("contents tests are not yet implemented"))
+	} else {
+		panic(errors.New("cannot run this type of test. invalid test type?"))
 	}
-	panic(errors.New("cannot run this type of test"))
 }
 
 func RunTests(config Config, tests map[string][]Test, logResult zerolog.Logger) {
@@ -72,6 +113,7 @@ func RunTests(config Config, tests map[string][]Test, logResult zerolog.Logger) 
 			log.Info().Str("implementation", impl.Name).Str("path", test.Path).Msg("Starting test")
 			result, err := runTest(test, impl, config, execFunc)
 			fields := make(map[string]interface{})
+			fields["measurements"] = result.measurements
 			if test.Type == TestTypeProtocol {
 				fields["protocol"] = test.ProtocolTestProperties.Protocol
 				fields["mode"] = test.ProtocolTestProperties.Mode
@@ -97,6 +139,7 @@ func RunTests(config Config, tests map[string][]Test, logResult zerolog.Logger) 
 					Str("stderr", result.stderr).
 					Str("path", test.Path).
 					Uint("type", test.Type).
+					Fields(fields).
 					Msg("Ran test")
 			}
 		}

@@ -14,7 +14,8 @@ import (
 )
 
 func runProtocolClientTest(test Test, impl WoTImplementation, config Config, execFunc ExecFunc) (TestResult, error) {
-	result := TestResult{"", "", false}
+	var result TestResult
+	result.measurements = make(map[int]*TestMeasurements)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(test.Timeout))
 	defer cancel()
@@ -40,11 +41,14 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 
 	if test.ProtocolTestProperties.Protocol == ProtoHttp || test.ProtocolTestProperties.Protocol == ProtoHttps {
 		client = &clients.HttpClient{}
-		r, err := client.Recv(*reqUrl)
+		r, md, err := client.Recv(*reqUrl)
 		if err != nil {
 			log.Err(err).Msg("http client error")
 		} else {
 			result.succeeded = len(test.ProtocolTestProperties.MustMatch) == matches
+			m := TestMeasurements{}
+			m.raw = []clients.MeasurementData{md}
+			result.measurements[0] = &m
 			log.Debug().Str("http client output", string(r))
 		}
 	} else if test.ProtocolTestProperties.Protocol == ProtoCoap {
@@ -53,11 +57,14 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 		if err != nil {
 			log.Err(err).Msg("coap client failed to connect")
 		}
-		r, err := client.Recv(*reqUrl)
+		r, md, err := client.Recv(*reqUrl)
 		if err != nil && !test.ProtocolTestProperties.RequestMustFail {
 			log.Err(err).Msg("coap client failed to GET data")
 		} else {
 			result.succeeded = len(test.ProtocolTestProperties.MustMatch) == matches
+			m := TestMeasurements{}
+			m.raw = []clients.MeasurementData{md}
+			result.measurements[0] = &m
 			log.Debug().Str("coap client output", string(r))
 		}
 	} else if test.ProtocolTestProperties.Protocol == ProtoMqtt {
@@ -74,7 +81,8 @@ func runProtocolClientTest(test Test, impl WoTImplementation, config Config, exe
 }
 
 func runProtocolServerTest(test Test, impl WoTImplementation, config Config, execFunc ExecFunc) (TestResult, error) {
-	result := TestResult{"", "", false}
+	var result TestResult
+	result.measurements = make(map[int]*TestMeasurements)
 	var err error
 
 	if test.ProtocolTestProperties.Protocol == ProtoHttp || test.ProtocolTestProperties.Protocol == ProtoHttps {
