@@ -75,7 +75,6 @@ func runMeasureTest(test Test, impl WoTImplementation, config Config, execFunc E
 	result.measurements = make(map[int]*TestMeasurements)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*time.Duration(test.Timeout))
-	defer cancel()
 	stdout := make([]byte, 0)
 	stderr := make([]byte, 0)
 	// run command
@@ -154,7 +153,8 @@ func runMeasureTest(test Test, impl WoTImplementation, config Config, execFunc E
 
 	result.stdout = string(stdout)
 	result.stderr = string(stderr)
+	cancel()
 	err = cmd.Process.Kill()
 
-	return result, nil
+	return result, err
 }

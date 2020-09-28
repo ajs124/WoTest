@@ -15,22 +15,27 @@ type EnvEntry struct {
 }
 
 // poll pipe once every ms and write into byte buffer
-func readPipe(r io.ReadCloser, ob *[]byte) {
+func readPipe(r io.ReadCloser, ob *[]byte, ctx context.Context) {
 	var err error
+	ticker := time.NewTicker(1 * time.Millisecond)
 	for err != io.EOF {
-		buf := make([]byte, 1024)
-		n := 0
-		n, err = r.Read(buf)
-		if n > 0 {
-			i := 0
-			for i < n {
-				*ob = append(*ob, buf[i])
-				i++
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			n := 1024
+			for n == 1024 {
+				buf := make([]byte, 1024)
+				n, err = r.Read(buf)
+				if n > 0 {
+					i := 0
+					for i < n {
+						*ob = append(*ob, buf[i])
+						i++
+					}
+					// log.Debug().Bytes("stdout", *ob).Int("n", n).Msg("")
+				}
 			}
-			// log.Debug().Bytes("stdout", *ob).Int("n", n).Msg("")
-		}
-		if n < 1024 {
-			time.Sleep(1 * time.Millisecond)
 		}
 	}
 }
@@ -52,8 +57,8 @@ func StartCmd(name, dir string, ctx context.Context, env []EnvEntry, stdout, std
 	outPipe, _ := cmd.StdoutPipe()
 	errPipe, _ := cmd.StderrPipe()
 
-	go readPipe(outPipe, stdout)
-	go readPipe(errPipe, stderr)
+	go readPipe(outPipe, stdout, ctx)
+	go readPipe(errPipe, stderr, ctx)
 
 	err := cmd.Start()
 	if err != nil {
