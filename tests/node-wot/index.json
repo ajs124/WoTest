@@ -23,15 +23,14 @@
   {
     "path": "producer_http_largeProp.js",
     "args": [ "33554432" ],
-    "type": 0,
+    "type": 1,
     "timeoutSec": 300,
     "measureTestProperties": {
       "protocol": 1,
-      "mode": 2,
-      "requestUrl": "https://127.0.0.1:8080/https_largeProp/properties/bench",
+      "requestUrl": "http://127.0.0.1:8080/https_largeProp/properties/bench",
       "mustMatch": [
         "long random string",
-        "https_largeProp ready"
+        "http_largeProp ready"
       ],
       "requestSets": [
           { "num": 1000, "parallel": 1 },
