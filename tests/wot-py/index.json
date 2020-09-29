@@ -1,5 +1,52 @@
 [
   {
+    "path": "producer_https_largeProp.py",
+    "args": [ "1048576" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 1,
+      "requestUrl": "https://127.0.0.1:9494/urn-http-plain-empty-5b5a192c-4d3b-771a-8ffb-9f1e392fdeed/property/bench",
+      "mustMatch": [
+        "INFO:root:Exposing and configuring Thing"
+      ],
+      "requestSets": [
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 10000, "parallel": 64 },
+        { "num": 20000, "parallel": 512 },
+        { "num": 20000, "parallel": 2048 }
+      ]
+    }
+  },
+  {
+    "path": "producer_http_largeProp.py",
+    "args": [ "1048576" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 1,
+      "requestUrl": "http://127.0.0.1:9494/urn-http-plain-empty-5b5a192c-4d3b-771a-8ffb-9f1e392fdeed/property/bench",
+      "mustMatch": [
+        "INFO:root:Exposing and configuring Thing"
+      ],
+      "requestSets": [
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 10000, "parallel": 64 },
+        { "num": 20000, "parallel": 512 },
+        { "num": 20000, "parallel": 2048 }
+      ]
+    }
+  },
+
+  {
     "path": "producer_http_plain_empty.py",
     "type": 0,
     "timeoutSec": 30,
