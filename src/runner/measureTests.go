@@ -45,7 +45,7 @@ func getPercentile(rm []clients.MeasurementData, percentile int) time.Duration {
 		times = append(times, dur)
 	}
 	sort.Slice(times, func(i, j int) bool {
-		return i < j
+		return times[i] < times[j]
 	})
 
 	var idx float64
