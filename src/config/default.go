@@ -69,6 +69,7 @@ type MeasureTestProperties struct {
 }
 
 type Test struct {
+	Name                   string                 `json:"name"`
 	Timeout                uint                   `json:"timeoutSec"`
 	Path                   string                 `json:"path"`
 	Args                   []string               `json:"args"`

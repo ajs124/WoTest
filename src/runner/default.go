@@ -35,8 +35,8 @@ func (tm *TestMeasurements) MarshalJSON() ([]byte, error) {
 	for i, r := range tm.raw {
 		output += "{ \"start\": \"" + r.StartTime.String() + "\","
 		output += "\"stop\": \"" + r.StopTime.String() + "\","
-		output += "\"duration\": \"" + r.StopTime.Sub(r.StartTime).String() + "\","
-		output += "\"size\": \"" + strconv.Itoa(int(r.Size)) + "\"}"
+		output += "\"duration\": \"" + strconv.FormatInt(r.StopTime.Sub(r.StartTime).Microseconds(), 10) + "\","
+		output += "\"size\": \"" + strconv.FormatUint(uint64(r.Size), 10) + "\"}"
 		if i != len(tm.raw)-1 {
 			output += ","
 		}
@@ -47,6 +47,7 @@ func (tm *TestMeasurements) MarshalJSON() ([]byte, error) {
 }
 
 type TestResult struct {
+	name         string
 	stdout       string
 	stderr       string
 	succeeded    bool
@@ -114,6 +115,9 @@ func RunTests(config Config, tests map[string][]Test, logResult zerolog.Logger) 
 			result, err := runTest(test, impl, config, execFunc)
 			fields := make(map[string]interface{})
 			fields["measurements"] = result.measurements
+			if test.Name == "" {
+				test.Name = impl.Name + " " + test.Path
+			}
 			if test.Type == TestTypeProtocol {
 				fields["protocol"] = test.ProtocolTestProperties.Protocol
 				fields["mode"] = test.ProtocolTestProperties.Mode
@@ -125,12 +129,14 @@ func RunTests(config Config, tests map[string][]Test, logResult zerolog.Logger) 
 				Str("path", test.Path).
 				Strs("args", test.Args).
 				Str("implementation", impl.Name).
+				Str("name", test.Name).
 				Fields(fields).
 				Uint("type", test.Type).Msg("")
 			if err != nil || !result.succeeded {
 				log.Error().
 					Err(err).
 					Str("path", test.Path).
+					Str("name", test.Name).
 					Msg("Test failed")
 			} else {
 				log.Info().
@@ -138,6 +144,7 @@ func RunTests(config Config, tests map[string][]Test, logResult zerolog.Logger) 
 					Str("stdout", result.stdout).
 					Str("stderr", result.stderr).
 					Str("path", test.Path).
+					Str("name", test.Name).
 					Uint("type", test.Type).
 					Fields(fields).
 					Msg("Ran test")
