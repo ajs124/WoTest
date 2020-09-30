@@ -3,22 +3,43 @@
     "path": "producer_https_largeProp.js",
     "args": [ "1048576" ],
     "type": 1,
-    "timeoutSec": 3000,
+    "timeoutSec": 300,
     "measureTestProperties": {
       "protocol": 1,
-      "requestUrl": "https://127.0.0.1:8080/https_largeProp/all/properties",
+      "requestUrl": "https://127.0.0.1:8080/https_largeProp/properties/bench",
       "mustMatch": [
         "https_largeProp ready"
       ],
       "requestSets": [
-          { "num": 1000, "parallel": 1 },
-          { "num": 1000, "parallel": 2 },
-          { "num": 1000, "parallel": 4 },
-          { "num": 1000, "parallel": 8 },
-          { "num": 2000, "parallel": 16 },
-          { "num": 10000, "parallel": 64 },
-          { "num": 10000, "parallel": 128 },
-          { "num": 20000, "parallel": 256 }
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
+      ]
+    }
+  },
+  {
+    "path": "producer_https_largeProp.js",
+    "args": [ "1024" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 1,
+      "requestUrl": "https://127.0.0.1:8080/https_largeProp/properties/bench",
+      "mustMatch": [
+        "https_largeProp ready"
+      ],
+      "requestSets": [
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
       ]
     }
   },
@@ -28,21 +49,62 @@
     "type": 1,
     "timeoutSec": 300,
     "measureTestProperties": {
-      "protocol": 1,
-      "requestUrl": "http://127.0.0.1:8080/https_largeProp/all/properties",
+      "protocol": 0,
+      "requestUrl": "http://127.0.0.1:8080/https_largeProp/properties/bench",
       "mustMatch": [
-        "long random string",
         "http_largeProp ready"
       ],
       "requestSets": [
-          { "num": 1000, "parallel": 1 },
-          { "num": 1000, "parallel": 2 },
-          { "num": 1000, "parallel": 4 },
-          { "num": 1000, "parallel": 8 },
-          { "num": 2000, "parallel": 16 },
-          { "num": 10000, "parallel": 64 },
-          { "num": 20000, "parallel": 128 },
-          { "num": 20000, "parallel": 256 }
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
+      ]
+    }
+  },
+  {
+    "path": "producer_https_largeProp.js",
+    "args": [ "1024" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 0,
+      "requestUrl": "http://127.0.0.1:8080/https_largeProp/properties/bench",
+      "mustMatch": [
+        "http_largeProp ready"
+      ],
+      "requestSets": [
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
+      ]
+    }
+  },  {
+    "path": "producer_coap_largeProp.js",
+    "args": [ "1024" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 2,
+      "requestUrl": "coap://127.0.0.1:8080/coap_largeProp/properties/bench",
+      "mustMatch": [
+        "coap_largeProp ready"
+      ],
+      "requestSets": [
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
       ]
     }
   },
