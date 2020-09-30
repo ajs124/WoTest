@@ -6,7 +6,7 @@ import math
 import tornado
 from tornado.ioloop import IOLoop, PeriodicCallback
 
-from wotpy.protocols.http.server import CoAPServer
+from wotpy.protocols.coap.server import CoAPServer
 from wotpy.wot.servient import Servient
 
 CATALOGUE_PORT = 9090
@@ -38,7 +38,7 @@ async def bench_handler():
 @tornado.gen.coroutine
 def main():
     global buf
-    LOGGER.info("Creating CoAP server on: {}".format(HTTP_PORT))
+    LOGGER.info("Creating CoAP server on: {}".format(COAP_PORT))
     coap_server = CoAPServer(port=COAP_PORT)
 
     LOGGER.info("Creating servient with TD catalogue on: {}".format(CATALOGUE_PORT))
