@@ -117,6 +117,9 @@ func RunTests(config Config, tests map[string][]Test, logResult zerolog.Logger) 
 			fields["measurements"] = result.measurements
 			if test.Name == "" {
 				test.Name = impl.Name + " " + test.Path
+				if len(test.Args) > 0 {
+					test.Name += " " + test.Args[0]
+				}
 			}
 			if test.Type == TestTypeProtocol {
 				fields["protocol"] = test.ProtocolTestProperties.Protocol

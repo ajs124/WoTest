@@ -99,11 +99,8 @@ func runMeasureTest(test Test, impl WoTImplementation, config Config, execFunc E
 
 	if test.MeasureTestProperties.Protocol == ProtoHttp || test.MeasureTestProperties.Protocol == ProtoHttps {
 		client = &clients.HttpClient{AllowSelfSignedCerts: true}
-
 	} else if test.MeasureTestProperties.Protocol == ProtoCoap {
 		client = &clients.CoapClient{}
-		_, err = client.Connect(*reqUrl)
-		defer client.Disconnect()
 	} else if test.MeasureTestProperties.Protocol == ProtoMqtt {
 		return result, errors.New("not implemented")
 	} else {
@@ -112,6 +109,11 @@ func runMeasureTest(test Test, impl WoTImplementation, config Config, execFunc E
 	}
 
 	for setNum, rs := range test.MeasureTestProperties.RequestSets {
+		_, err = client.Connect(*reqUrl)
+		if err != nil {
+			log.Info().Err(err).Msg("error connecting")
+			break
+		}
 		p := 0
 		mdC := make(chan clients.MeasurementData)
 		var wg sync.WaitGroup
@@ -149,6 +151,7 @@ func runMeasureTest(test Test, impl WoTImplementation, config Config, execFunc E
 		measures.nnth = getPercentile(measures.raw, 99)
 		measures.stddev = getStdDev(measures.raw)
 		result.measurements[setNum] = &measures
+		err = client.Disconnect()
 	}
 
 	result.stdout = string(stdout)
