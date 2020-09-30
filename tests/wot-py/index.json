@@ -16,9 +16,30 @@
         { "num": 1000, "parallel": 4 },
         { "num": 1000, "parallel": 8 },
         { "num": 2000, "parallel": 16 },
-        { "num": 10000, "parallel": 64 },
-        { "num": 20000, "parallel": 128 },
-        { "num": 20000, "parallel": 256 }
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
+      ]
+    }
+  },
+  {
+    "path": "producer_https_largeProp.py",
+    "args": [ "1024" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 1,
+      "requestUrl": "https://127.0.0.1:9494/urn-http-plain-empty-5b5a192c-4d3b-771a-8ffb-9f1e392fdeed/property/bench",
+      "mustMatch": [
+        "INFO:root:Exposing and configuring Thing"
+      ],
+      "requestSets": [
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
       ]
     }
   },
@@ -28,7 +49,7 @@
     "type": 1,
     "timeoutSec": 300,
     "measureTestProperties": {
-      "protocol": 1,
+      "protocol": 0,
       "requestUrl": "http://127.0.0.1:9494/urn-http-plain-empty-5b5a192c-4d3b-771a-8ffb-9f1e392fdeed/property/bench",
       "mustMatch": [
         "INFO:root:Exposing and configuring Thing"
@@ -39,13 +60,55 @@
         { "num": 1000, "parallel": 4 },
         { "num": 1000, "parallel": 8 },
         { "num": 2000, "parallel": 16 },
-        { "num": 10000, "parallel": 64 },
-        { "num": 20000, "parallel": 128 },
-        { "num": 20000, "parallel": 256 }
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
       ]
     }
   },
-
+  {
+    "path": "producer_http_largeProp.py",
+    "args": [ "1024" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 0,
+      "requestUrl": "http://127.0.0.1:9494/urn-http-plain-empty-5b5a192c-4d3b-771a-8ffb-9f1e392fdeed/property/bench",
+      "mustMatch": [
+        "INFO:root:Exposing and configuring Thing"
+      ],
+      "requestSets": [
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
+      ]
+    }
+  },
+  {
+    "path": "producer_coap_largeProp.py",
+    "args": [ "1024" ],
+    "type": 1,
+    "timeoutSec": 300,
+    "measureTestProperties": {
+      "protocol": 2,
+      "requestUrl": "coap://127.0.0.1:5683/property?thing=urn-coap-large-prop-95c6cb41-32cf-75e9-2817-ee638b67867d&name=bench",
+      "mustMatch": [
+        "INFO:root:Exposing and configuring Thing"
+      ],
+      "requestSets": [
+        { "num": 1000, "parallel": 1 },
+        { "num": 1000, "parallel": 2 },
+        { "num": 1000, "parallel": 4 },
+        { "num": 1000, "parallel": 8 },
+        { "num": 2000, "parallel": 16 },
+        { "num": 5000, "parallel": 32 },
+        { "num": 10000, "parallel": 64 }
+      ]
+    }
+  },
   {
     "path": "producer_http_plain_empty.py",
     "type": 0,

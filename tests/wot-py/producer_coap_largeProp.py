@@ -10,7 +10,7 @@ from wotpy.protocols.coap.server import CoAPServer
 from wotpy.wot.servient import Servient
 
 CATALOGUE_PORT = 9090
-COAP_PORT = 9393
+COAP_PORT = 5683
 
 logging.basicConfig()
 LOGGER = logging.getLogger()
