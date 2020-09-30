@@ -50,7 +50,7 @@
     "timeoutSec": 300,
     "measureTestProperties": {
       "protocol": 0,
-      "requestUrl": "http://127.0.0.1:8080/https_largeProp/properties/bench",
+      "requestUrl": "http://127.0.0.1:8080/http_largeProp/properties/bench",
       "mustMatch": [
         "http_largeProp ready"
       ],
@@ -66,13 +66,13 @@
     }
   },
   {
-    "path": "producer_https_largeProp.js",
+    "path": "producer_http_largeProp.js",
     "args": [ "1024" ],
     "type": 1,
     "timeoutSec": 300,
     "measureTestProperties": {
       "protocol": 0,
-      "requestUrl": "http://127.0.0.1:8080/https_largeProp/properties/bench",
+      "requestUrl": "http://127.0.0.1:8080/http_largeProp/properties/bench",
       "mustMatch": [
         "http_largeProp ready"
       ],
