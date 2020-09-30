@@ -3,6 +3,7 @@ package clients
 import (
 	"context"
 	"errors"
+	"github.com/plgd-dev/go-coap/v2/message"
 	"github.com/plgd-dev/go-coap/v2/udp"
 	"github.com/plgd-dev/go-coap/v2/udp/client"
 	"github.com/rs/zerolog/log"
@@ -34,7 +35,13 @@ func (c *CoapClient) Recv(u url.URL) ([]byte, MeasurementData, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	md.StartTime = time.Now().UTC()
-	msg, err := c.co.Get(ctx, u.Path) // maybe EscapedPath? who knows…
+	queryParams := make([]message.Option, 0)
+	uriQPs := u.Query()
+	for qk, qv := range uriQPs {
+		qs := qk + "=" + qv[0]
+		queryParams = append(queryParams, message.Option{ID: message.URIQuery, Value: []byte(qs)})
+	}
+	msg, err := c.co.Get(ctx, u.Path, queryParams...)
 	if err != nil {
 		log.Err(err).Msg("Coap: cannot get response")
 		return nil, md, err
