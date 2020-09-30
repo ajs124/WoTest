@@ -17,8 +17,8 @@
         { "num": 1000, "parallel": 8 },
         { "num": 2000, "parallel": 16 },
         { "num": 10000, "parallel": 64 },
-        { "num": 20000, "parallel": 512 },
-        { "num": 20000, "parallel": 2048 }
+        { "num": 20000, "parallel": 128 },
+        { "num": 20000, "parallel": 256 }
       ]
     }
   },
@@ -40,8 +40,8 @@
         { "num": 1000, "parallel": 8 },
         { "num": 2000, "parallel": 16 },
         { "num": 10000, "parallel": 64 },
-        { "num": 20000, "parallel": 512 },
-        { "num": 20000, "parallel": 2048 }
+        { "num": 20000, "parallel": 128 },
+        { "num": 20000, "parallel": 256 }
       ]
     }
   },
